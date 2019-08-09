@@ -1,0 +1,18 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  # Build docker image
+  - docker build -t rubensa/miniconda3-dev --label "maintainer=Ruben Suarez <rubensa@gmail.com>" .
+
+script:
+  # Check python version
+  - docker run rubensa/miniconda3-dev python --version
+
+after_success:
+  # Log in docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Put images on Docker Hub
+  - docker push rubensa/miniconda3-dev
+
