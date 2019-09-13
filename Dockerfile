@@ -1,50 +1,37 @@
-FROM continuumio/miniconda3
+FROM rubensa/ubuntu-dev
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
-# Define user and group
-ARG USER=developer
-ARG GROUP=developers
+# Tell docker that all future commands should be run as root
+USER root
 
-# Configure apt and install packages
-RUN apt-get update \
-    #
-    # Verify sudo installed
-    && apt-get -y install --no-install-recommends sudo 2>&1 \
-    #
-    # Verify git installed
-    && apt-get -y install git \
-    #
-    # create developer user (1000) and group (1000)
-    && addgroup --gid 1000 $GROUP \
-    && adduser --uid 1000 --ingroup $GROUP --home /home/$USER --shell /bin/bash --disabled-password --gecos "Developer" $USER \
-    #
-    # add user to sudoers
-    && echo "$USER ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USER \
-    && chmod 0440 /etc/sudoers.d/$USER \
-    #
-    # add fixuid
-    && curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.4/fixuid-0.4-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - \
-    && chown root:root /usr/local/bin/fixuid \
-    && chmod 4755 /usr/local/bin/fixuid \
-    && mkdir -p /etc/fixuid \
-    && printf "user: $USER\ngroup: $GROUP\npaths:\n  - /home/$USER" > /etc/fixuid/config.yml
+# Set root home directory
+ENV HOME /root
 
-# Configure conda for multiple users (https://medium.com/@pjptech/installing-anaconda-for-multiple-users-650b2a6666c6)
-RUN chmod -R go-w+rX /opt/conda
+# Add conda binary to PATH
+ENV PATH /opt/conda/bin:$PATH
 
-# Configure conda for developer user
-RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/$USER/.bashrc && \
-    echo "conda activate base" >> /home/$USER/.bashrc
+# Install miniconda
+RUN curl -o ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
+    && mkdir ~/.conda \
+    && /bin/bash ~/miniconda.sh -b -p /opt/conda \
+    && rm ~/miniconda.sh \
+    && /opt/conda/bin/conda clean -tipsy \
+    && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh \
+    && echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc \
+    && echo "conda activate base" >> ~/.bashrc \
+    && find /opt/conda/ -follow -type f -name '*.a' -delete \
+    && find /opt/conda/ -follow -type f -name '*.js.map' -delete \
+    && /opt/conda/bin/conda clean -afy \
+    # Configure conda for multiple users (https://medium.com/@pjptech/installing-anaconda-for-multiple-users-650b2a6666c6)
+    && chmod -R go-w+rX /opt/conda
 
-# Tell docker that all future commands should be run as the user
-USER $USER:$GROUP
-
-# Set the default shell to bash rather than sh
-ENV SHELL /bin/bash
+# Tell docker that all future commands should be run as the non-root user
+USER ${USER}:${GROUP}
 
 # Set user home directory (see: https://github.com/microsoft/vscode-remote-release/issues/852)
-ENV HOME /home/$USER
+ENV HOME /home/$USERNAME
 
-# Allways run fixuid
-ENTRYPOINT ["fixuid"]
-
+# Configure conda for the non-root user
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/$USER/.bashrc \
+    && echo "conda activate base" >> /home/$USER/.bashrc
