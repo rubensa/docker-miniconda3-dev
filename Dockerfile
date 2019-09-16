@@ -2,7 +2,7 @@ FROM rubensa/ubuntu-dev
 LABEL author="Ruben Suarez <rubensa@gmail.com>"
 
 # Add conda binary to PATH
-ENV PATH="$HOME/miniconda/bin:$PATH"
+ENV PATH="/opt/conda/bin:$PATH"
 
 # Tell docker that all future commands should be run as root
 USER root
