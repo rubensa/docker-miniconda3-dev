@@ -19,7 +19,9 @@ RUN curl -o $HOME/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-la
     && rm ~/miniconda.sh \
     && ln -s $SHARED_FOLDER/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh \
     && printf "\n. $SHARED_FOLDER/conda/etc/profile.d/conda.sh" >> ~/.bashrc \
-    && printf "conda activate base\n" >> ~/.bashrc
+    && printf "conda activate base\n" >> ~/.bashrc \
+    # Fix group
+    && chgrp -R shared $SHARED_FOLDER/conda
 
 # Tell docker that all future commands should be run as the non-root user (defined at rubensa/ubuntu-dev)
 USER $DEV_USER
@@ -29,8 +31,8 @@ ENV HOME=/home/$DEV_USER
 
 # Configure conda for the non-root user
 RUN printf "\n. $SHARED_FOLDER/conda/etc/profile.d/conda.sh\nconda activate base\n" >> ~/.bashrc \
-    # Use shared folder to create new environments
-    && printf "envs_dirs:\n  - $SHARED_FOLDER/conda/envs\n" >> ~/.condarc \
+    # Use shared folder for packages and environments
+    && printf "envs_dirs:\n  - $SHARED_FOLDER/conda/envs\npkgs_dirs:\n   - /shared/conda/pkgs\n" >> ~/.condarc \
     # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
     && mkdir ~/.conda
 
