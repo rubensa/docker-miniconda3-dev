@@ -13,8 +13,8 @@ docker run --rm -it \
 	-v $(pwd):/home/developer/work \
 	-w /home/developer/work \
 	-u $(id -u $USERNAME):$(id -g $USERNAME) \
-	--group-add shared \
+	--group-add conda \
 	rubensa/miniconda3-dev
 ```
 
-This way, any file created in the container initial working directory is written and owned by current host user in the launch directory.
+This way, any file created in the container initial working directory is written and owned by current host user:group launching the container (and the internal "conda" group is added to keep access to shared "/opt/conda" folder where conda is installed).
