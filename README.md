@@ -13,6 +13,7 @@ docker run --rm -it \
 	-v $(pwd):/home/developer/work \
 	-w /home/developer/work \
 	-u $(id -u $USERNAME):$(id -g $USERNAME) \
+	--group-add shared \
 	rubensa/miniconda3-dev
 ```
 
