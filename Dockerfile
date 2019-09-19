@@ -65,7 +65,7 @@ USER ${DEV_USER}
 ENV HOME /home/$DEV_USER
 
 # Configure conda for the non-root user
-RUN echo ". ${CONDA_INSTALL_DIR}/etc/profile.d/conda.sh" >> ~/.bashrc \
+RUN printf "\n. ${CONDA_INSTALL_DIR}/etc/profile.d/conda.sh\n" >> ~/.bashrc \
     # Use shared folder for packages and environments
     && printf "envs_dirs:\n  - ${CONDA_INSTALL_DIR}/envs\npkgs_dirs:\n   - ${CONDA_INSTALL_DIR}/pkgs\n" >> ~/.condarc \
     # See https://github.com/ContinuumIO/anaconda-issues/issues/11148
