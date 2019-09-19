@@ -25,7 +25,7 @@ RUN apt-get update \
     # Install ACL
     && apt-get -y install acl \
     #
-    # Create a conda user and group
+    # Create a conda group
     && addgroup --gid ${CONDA_GROUP_ID} ${CONDA_GROUP} \
     #
     # Assign conda group to non-root user
