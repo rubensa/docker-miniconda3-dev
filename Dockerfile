@@ -5,7 +5,7 @@ LABEL author="Ruben Suarez <rubensa@gmail.com>"
 ARG CONDA_GROUP_ID=2000
 
 # Define conda group and installation folder
-ENV CONDA_USER=conda CONDA_GROUP=conda CONDA_INSTALL_DIR=/opt/conda
+ENV CONDA_GROUP=conda CONDA_INSTALL_DIR=/opt/conda
 
 # Add conda binary to PATH
 ENV PATH="${CONDA_INSTALL_DIR}/bin:$PATH"
