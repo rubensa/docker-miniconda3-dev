@@ -1,3 +1,6 @@
+| ⚠ **WARNING**: This image is obsolete as [rubensa/ubuntu-tini-dev](https://github.com/rubensa/docker-ubuntu-tini-dev) now includes [Miniconda](https://docs.conda.io/en/latest/miniconda.html). |
+| --- |
+
 # Miniconda 3 image for local development
 
 This image provides a Miniconda 3 environment useful for local development purposes.
